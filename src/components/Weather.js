@@ -1,6 +1,7 @@
 import React from 'react'
 import "./weather.css"
 import { useState } from "react";
+import DisplayWeather from './DisplayWeather';
 
 export default function Weather() {
     //variable
@@ -11,7 +12,12 @@ export default function Weather() {
         city:"",
         country:""
     }
-    )
+    );
+
+    //creates a new state to hold the weather data
+    const [weather, setWeather] = useState(
+        [//store the data as a key value pair
+    ])
 
     //function that handles the change in the state, typically an arrow function
     const handleChange=(e)=>{
@@ -26,7 +32,6 @@ export default function Weather() {
             setForm({...form, country:value})
         }
 
-        console.log(form.city, form.country)
     }
 
     //function that will fetch us the weather data
@@ -40,8 +45,12 @@ export default function Weather() {
         else{
             const data = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${form.city},${form.country}&appid=${APIKEY}`)
        
-            .then((res)=> console.log(res.json())) //.then takes in the object once the promise has been resolved
+            .then((res)=> res.json()) //turns the promise object into json format
+            .then((data)=> data); //gathers the data from the promise object
 
+            setWeather({
+                data: data // sets data(weather state) : data(the actual data from the promise)
+            }); //UPDATES THE WEATHER STATE (according to the data passed here)
         }
     }
 
@@ -55,6 +64,15 @@ export default function Weather() {
             <input type="text" name='country' placeholder="country" onChange={(e)=>handleChange(e)}></input>
             <button name="getweather" onClick={(e)=> weatherData(e)}>Submit</button>
         </form>
+
+        {
+            weather.data!= undefined ?
+            <div>
+                <DisplayWeather data ={weather.data}></DisplayWeather>
+            </div>
+
+            :null
+        }
     </div>
   )
 }
